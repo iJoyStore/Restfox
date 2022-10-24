@@ -1,48 +1,48 @@
 <template>
-    <div
-        class="sidebar-item"
-        :class="{ 'sidebar-item-active': activeTab && sidebarItem._id === activeTab._id  }"
-        @click="handleSidebarItemClick(sidebarItem)"
-        @dblclick="handleSidebarItemDoubleClick(sidebarItem)"
-        @contextmenu.prevent="handleContextMenu(sidebarItem, $event)"
-        :draggable="collectionFilter === '' ? true : false"
-        :data-parent-id="sidebarItem.parentId"
-        :data-id="sidebarItem._id"
-        :data-type="sidebarItem._type"
-    >
-        <template v-if="sidebarItem._type === 'request_group'">
-            <div style="margin-right: 0.3rem">
-                <i class="fa space-right fa-folder-open" v-if="getSidebarItemExpandedState(sidebarItem)"></i>
-                <i class="fa space-right fa-folder" v-else></i>
-            </div>
-        </template>
-        <template v-if="sidebarItem._type === 'request'">
-            <div class="sidebar-item-method" :class="`request-method--${sidebarItem.method}`">{{ sidebarItem.method.slice(0, 4) }}</div>
-        </template>
-        <div style="width: 100%; margin-right: 0.5rem">
-            <div v-if="!showInputToRenameRequest">
-                {{ sidebarItem.name }}
-                <span v-if="sidebarItem.name === ''" style="visibility: hidden;">Empty Name</span>
-            </div>
-            <input
-                type="text"
-                v-model="newSidebarItemName"
-                @input="updateTemporarySidebarItemName"
-                style="pointer-events: auto; border: 0; outline: 0; width: 100%; padding: 0; background-color: inherit; font-style: italic;"
-                spellcheck="false"
-                @keydown.enter="showInputToRenameRequest = false"
-                @blur="saveSidebarItemName(sidebarItem)"
-                @dblclick.stop
-                v-focus
-                v-else
-            >
-        </div>
+  <div
+    class="sidebar-item"
+    :class="{ 'sidebar-item-active': activeTab && sidebarItem._id === activeTab._id  }"
+    @click="handleSidebarItemClick(sidebarItem)"
+    @dblclick="handleSidebarItemDoubleClick(sidebarItem)"
+    @contextmenu.prevent="handleContextMenu(sidebarItem, $event)"
+    :draggable="collectionFilter === '' ? true : false"
+    :data-parent-id="sidebarItem.parentId"
+    :data-id="sidebarItem._id"
+    :data-type="sidebarItem._type"
+  >
+    <template v-if="sidebarItem._type === 'request_group'">
+      <div style="margin-right: 0.3rem">
+        <i class="fa space-right fa-folder-open" v-if="getSidebarItemExpandedState(sidebarItem)"></i>
+        <i class="fa space-right fa-folder" v-else></i>
+      </div>
+    </template>
+    <template v-if="sidebarItem._type === 'request'">
+      <div class="sidebar-item-method" :class="`request-method--${sidebarItem.method}`">{{ sidebarItem.method.slice(0, 4) }}</div>
+    </template>
+    <div style="width: 100%; margin-right: 0.5rem">
+      <div v-if="!showInputToRenameRequest">
+        {{ sidebarItem.name }}
+        <span v-if="sidebarItem.name === ''" style="visibility: hidden;">Empty Name</span>
+      </div>
+      <input
+        type="text"
+        v-model="newSidebarItemName"
+        @input="updateTemporarySidebarItemName"
+        style="pointer-events: auto; border: 0; outline: 0; width: 100%; padding: 0; background-color: inherit; font-style: italic;"
+        spellcheck="false"
+        @keydown.enter="showInputToRenameRequest = false"
+        @blur="saveSidebarItemName(sidebarItem)"
+        @dblclick.stop
+        v-focus
+        v-else
+      >
     </div>
-    <div class="sidebar-list" v-if="'children' in sidebarItem && sidebarItem.children.length && getSidebarItemExpandedState(sidebarItem)">
-        <template v-for="sidebarItem1 in sidebarItem.children">
-            <SidebarItem :sidebar-item="sidebarItem1" />
-        </template>
-    </div>
+  </div>
+  <div class="sidebar-list" v-if="'children' in sidebarItem && sidebarItem.children.length && getSidebarItemExpandedState(sidebarItem)">
+    <template v-for="sidebarItem1 in sidebarItem.children">
+      <SidebarItem :sidebar-item="sidebarItem1" />
+    </template>
+  </div>
 </template>
 
 <script>
