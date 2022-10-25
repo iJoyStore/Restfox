@@ -1,5 +1,6 @@
 import Dexie from 'dexie'
 
+// dexie.js是一个对浏览器indexexDB的包装库，使得我们可以更方便地操作indexedDB
 export const db = new Dexie('Restfox')
 
 db.version(4).stores({

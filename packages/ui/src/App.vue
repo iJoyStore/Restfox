@@ -32,45 +32,19 @@ const openContextMenuElement = computed(() => {
   return store.state.openContextMenuElement
 })
 
-
+// 激活Workspace
 watch(
-  () => activeTab.url,
-  () => {
-    // sync query params in url with query params in collection if they are the same
-    if (activeTab && 'url' in activeTab && activeTab.url && 'parameters' in activeTab) {
-      let urlParamsSplit = activeTab.url.split('?')
-      if (urlParamsSplit.length > 1) {
-        const urlSearchParams = new URLSearchParams(urlParamsSplit[1])
-        for (const urlParam of urlSearchParams.entries()) {
-          activeTab.parameters.filter(item => !item.disabled && item.name === urlParam[0]).forEach(matchingParam => {
-            matchingParam.value = urlParam[1]
-          })
-        }
-      }
+  activeWorkspace,
+  async () => {
+    if (activeWorkspace) {
+      localStorage.setItem(constants.LOCAL_STORAGE_KEY.ACTIVE_WORKSPACE_ID, activeWorkspace._id)
+    } else {
+      localStorage.removeItem(constants.LOCAL_STORAGE_KEY.ACTIVE_WORKSPACE_ID)
     }
+    await fetchSetCollectionForWorkspace()
   }
 )
-
-watch(
-  () => activeTab.parameters,
-  () => {
-    // sync query params in url with query params in collection if they are the same
-    if (activeTab && 'url' in activeTab && activeTab.url) {
-      let urlParamsSplit = activeTab.url.split('?')
-      if (urlParamsSplit.length > 1) {
-        const urlSearchParams = new URLSearchParams(urlParamsSplit[1])
-        activeTab.parameters.filter(item => !item.disabled).forEach(param => {
-          if (urlSearchParams.has(param.name)) {
-            urlSearchParams.set(param.name, param.value)
-          }
-        })
-        urlParamsSplit[1] = urlSearchParams.toString()
-        activeTab.url = urlParamsSplit.join('?')
-      }
-    }
-  },
-  { deep: true }
-)
+// 切换接口Tab
 watch(
   activeTab,
   (newValue, oldValue) => {
@@ -96,16 +70,43 @@ watch(
   },
   { deep: true }
 )
+// 同步请求连接与Query参数
 watch(
-  activeWorkspace,
-  async () => {
-    if (activeWorkspace) {
-      localStorage.setItem(constants.LOCAL_STORAGE_KEY.ACTIVE_WORKSPACE_ID, activeWorkspace._id)
-    } else {
-      localStorage.removeItem(constants.LOCAL_STORAGE_KEY.ACTIVE_WORKSPACE_ID)
+  () => activeTab.value?.url,
+  () => {
+    // sync query params in url with query params in collection if they are the same
+    if (activeTab.value && 'url' in activeTab.value && activeTab.value.url && 'parameters' in activeTab.value) {
+      let urlParamsSplit = activeTab.value.url.split('?')
+      if (urlParamsSplit.length > 1) {
+        const urlSearchParams = new URLSearchParams(urlParamsSplit[1])
+        for (const urlParam of urlSearchParams.entries()) {
+          activeTab.value.parameters.filter(item => !item.disabled && item.name === urlParam[0]).forEach(matchingParam => {
+            matchingParam.value = urlParam[1]
+          })
+        }
+      }
     }
-    await fetchSetCollectionForWorkspace()
   }
+)
+watch(
+  () => activeTab.value?.parameters,
+  () => {
+    // sync query params in url with query params in collection if they are the same
+    if (activeTab.value && 'url' in activeTab.value && activeTab.value.url) {
+      let urlParamsSplit = activeTab.value.url.split('?')
+      if (urlParamsSplit.length > 1) {
+        const urlSearchParams = new URLSearchParams(urlParamsSplit[1])
+        activeTab.value.parameters.filter(item => !item.disabled).forEach(param => {
+          if (urlSearchParams.has(param.name)) {
+            urlSearchParams.set(param.name, param.value)
+          }
+        })
+        urlParamsSplit[1] = urlSearchParams.toString()
+        activeTab.value.url = urlParamsSplit.join('?')
+      }
+    }
+  },
+  { deep: true }
 )
 watch(
   openContextMenuElement,
@@ -192,15 +193,11 @@ function handleGlobalKeydown(event) {
     event.stopPropagation()
 
     const tabIndex = tabs.findIndex(tab => tab._id === activeTab._id)
-
     const nextTabIndex = tabIndex + 1
-
     const nextTab = nextTabIndex <= tabs.length - 1 ? tabs[nextTabIndex] : tabs[0]
-
     if (nextTab) {
       store.commit('setActiveTab', nextTab)
     }
-
     return
   }
 
@@ -209,15 +206,11 @@ function handleGlobalKeydown(event) {
     event.stopPropagation()
 
     const tabIndex = tabs.findIndex(tab => tab._id === activeTab._id)
-
     const previousTabIndex = tabIndex - 1
-
     const previousTab = previousTabIndex >= 0 ? tabs[previousTabIndex] : tabs[tabs.length - 1]
-
     if (previousTab) {
       store.commit('setActiveTab', previousTab)
     }
-
     return
   }
 }
