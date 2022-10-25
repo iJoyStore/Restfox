@@ -199,6 +199,17 @@ const store = createStore({
   mutations: {
     addTab(state, tab) {
       const tabCopy = JSON.parse(JSON.stringify(tab))
+            if(tab.body.mimeType === 'multipart/form-data') {
+                let params = []
+                for(const param of tab.body.params) {
+                    let paramExtracted = {...param}
+                    if('files' in paramExtracted) {
+                        paramExtracted.files = [...paramExtracted.files]
+                    }
+                    params.push(paramExtracted)
+                }
+                tabCopy.body.params = params
+            }
       const existingTab = state.tabs.find(tabItem => tabItem._id === tabCopy._id)
       if (!existingTab) {
         state.tabs.push(tabCopy)
