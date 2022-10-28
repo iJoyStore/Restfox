@@ -70,10 +70,11 @@ watch(
   },
   { deep: true }
 )
-// 同步请求连接与Query参数
+// 同步请求链接与Query参数
 watch(
   () => activeTab.value?.url,
   () => {
+    // TODO 删除参数时没有更新Query
     // sync query params in url with query params in collection if they are the same
     if (activeTab.value && 'url' in activeTab.value && activeTab.value.url && 'parameters' in activeTab.value) {
       let urlParamsSplit = activeTab.value.url.split('?')
@@ -91,6 +92,7 @@ watch(
 watch(
   () => activeTab.value?.parameters,
   () => {
+    // TODO 删除参数时没有更新url
     // sync query params in url with query params in collection if they are the same
     if (activeTab.value && 'url' in activeTab.value && activeTab.value.url) {
       let urlParamsSplit = activeTab.value.url.split('?')

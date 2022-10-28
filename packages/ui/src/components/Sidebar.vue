@@ -1,5 +1,5 @@
 <template>
-    <div class="sidebar-filter">
+    <div class="sidebar-filter" style="padding-top:0.5rem">
         <input type="search" placeholder="Filter" spellcheck="false" v-model="collectionFilter">
     </div>
     <div class="sidebar-list-container" @contextmenu.prevent="handleSidebarEmptyAreaContextMenu">
